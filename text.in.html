@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voice Controlled Light</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 50px;
+      }
+      #status {
+        margin-top: 20px;
+        font-size: 24px;
+        color: green;
+      }
+      #light {
+        width: 100px;
+        height: 100px;
+        margin: 20px auto;
+        background-color: gray;
+        border-radius: 50%;
+        transition: background-color 0.5s;
+      }
+      .on {
+        background-color: rgb(157, 0, 255);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Voice Controlled Light</h1>
+    <button id="start-button">Start Listening</button>
+    <div id="light" class="off"></div>
+    <div id="status">Light is OFF</div>
+    <script>
+      const startButton = document.getElementById("start-button");
+      const statusDiv = document.getElementById("status");
+      const lightDiv = document.getElementById("light");
+      let lightOn = false;
+      // Check for browser support
+      if (!("webkitSpeechRecognition" in window)) {
+        alert("Sorry, your browser does not support speech recognition.");
+      } else {
+        const recognition = new webkitSpeechRecognition();
+        recognition.continuous = false; // Stop after one recognition
+        recognition.interimResults = false; // No interim results
+        recognition.onresult = function (event) {
+          const command = event.results[0][0].transcript.toLowerCase();
+          console.log("Command received: ", command);
+          if (command.includes("turn on the light")) {
+            lightOn = true;
+            statusDiv.textContent = "Light is ON";
+            lightDiv.classList.add("on");
+          } else if (command.includes("turn off the light")) {
+            lightOn = false;
+            statusDiv.textContent = "Light is OFF";
+            lightDiv.classList.remove("on");
+          } else {
+            statusDiv.textContent = "Command not recognized.";
+          }
+        };
+        recognition.onerror = function (event) {
+          console.error("Error occurred in recognition: " + event.error);
+        };
+        startButton.addEventListener("click", function () {
+          recognition.start();
+          statusDiv.textContent = "Listening...";
+        });
+      }
+    </script>
+  </body>
+</html>
